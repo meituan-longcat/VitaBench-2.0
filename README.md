@@ -1,96 +1,436 @@
 <div align=center><h1>
-    🌱 VitaBench 2.0: Evaluating Personalized and Proactive Agents<br>
-    in Long-Term User Interactions
+    VitaBench 2.0: Evaluating Personalized and Proactive Agents in Long-Term User Interactions
 </h1></div>
 
 <p align="center">
-  📃 <a href="https://arxiv.org/abs/2605.27141" target="_blank">Paper</a> • 🌐 <a href="https://vitabench.github.io/" target="_blank">Website</a> • 🏆 <a href="https://vitabench.github.io/#Leaderboard" target="_blank">Leaderboard</a> • 🔁 <a href="https://github.com/meituan-longcat/vitabench" target="_blank">VitaBench (v1)</a>
+  📃 <a href="https://arxiv.org/abs/2605.27141" target="_blank">Paper</a> 
+</p>
+
+<p align="center">
+  <b>🚧 Dataset and Code Release</b>
+  <br>
+  The dataset, evaluation scripts, and code will be released soon.
 </p>
 
 ## 📖 Introduction
 
-**VitaBench 2.0** extends [VitaBench](https://github.com/meituan-longcat/vitabench) from one-shot interactive tasks to **long-term, multi-session user interactions**, where an agent must remain *personalized* and *proactive* across conversations that span days, weeks, or months. While VitaBench (v1) measures whether an agent can complete a single complex life-serving request, VitaBench 2.0 asks a harder question: **can an agent remember the user, anticipate their evolving needs, and act on their behalf — over time?**
+Large language models (LLMs) have evolved into interactive agents that collaborate with users in real-world tasks. Effective collaboration in such settings increasingly depends on understanding the user beyond what is explicitly stated, as user intent is often reflected in fragmented daily interactions and requires both personalized modeling and proactive interaction. We introduce **VitaBench 2.0**, a benchmark for evaluating personalized and proactive agent behavior in long-term user interactions.
 
-Each evaluation in VitaBench 2.0 simulates a continuing relationship between an agent and a user across multiple sessions in food delivery, in-store consumption, and online travel scenarios. Across these sessions, user preferences drift, prior commitments must be honored, and earlier context must be retrieved or reconstructed to act correctly in the present. To stress-test how agents handle this growing context, we evaluate every model under three memory regimes:
+**VitaBench 2.0** extends [VitaBench](https://github.com/meituan-longcat/vitabench) from one-shot tasks to **long-term, multi-session user interactions**, where an agent must *infer*, *utilize*, and *update* user preference across fragmented conversations and behaviors that span days, weeks, or months. While VitaBench 1.0 measures whether an agent can complete a single complex life-serving request, VitaBench 2.0 further asks the question: **can an agent understand the user from daily interactions, anticipate their evolving needs, and act on their behalf — over time?**
+
+<p align="center">
+  <img src="figure/VitaBench-2.0.png" alt="VitaBench 2.0 Overview" width="100%"/>
+</p>
+
+Each evaluation in VitaBench 2.0 simulates a continuing relationship between an agent and a user across multiple sessions in daily scenarios. Across these sessions, user preferences drift, prior commitments must be honored, and earlier context must be retrieved or reconstructed to act correctly in the present. To support systematic analysis, we provide an extensible memory interface that enables controlled comparison across three representative memory architectures:
 
 - **Full Context** — the entire interaction history is appended to the prompt, an upper-bound on what the model can possibly leverage.
 - **Agentic Memory** — the agent autonomously decides what to write to and read from a structured memory store.
 - **RAG Memory** — past interactions are chunked, embedded, and retrieved on demand.
 
-We further measure both single-attempt success (**Avg@4**, **Pass@4**) and consistency across repeated rollouts (**Pass^4**), surfacing models that can *reliably* serve the same user — not just succeed once.
+Our results show that even the SOTA models reach only ~50% Avg@4 under Full Context and degrade further under realistic memory settings, indicating that long-horizon personalization and proactivity remain open challenges for current LLM agents.
 
-Our results show that even the strongest thinking models reach only ~50% Avg@4 under Full Context and degrade further under realistic memory settings, indicating that long-horizon personalization and proactivity remain open challenges for current LLM agents.
 
 ## 🏆 Leaderboard
 
 Performance of non-thinking and thinking models under three memory settings. The leaderboard is sorted by **Avg@4** under **Full Context**. Best results in each column are in **bold**.
 
-### Non-thinking Models
+<h3>Non-thinking Models</h3>
 
-| Model | Full Context |  |  | Agentic Memory |  |  | RAG Memory |  |  |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|  | **Avg@4** | Pass@4 | Pass^4 | **Avg@4** | Pass@4 | Pass^4 | **Avg@4** | Pass@4 | Pass^4 |
-| GPT-4o-mini             | 0.067 | 0.180 | 0.006 | 0.084 | 0.229 | 0.008 | 0.094 | 0.227 | 0.011 |
-| GPT-3.5-Turbo           | 0.140 | 0.314 | 0.019 | 0.231 | 0.467 | 0.056 | 0.205 | 0.409 | 0.059 |
-| LongCat-Flash-Chat      | 0.298 | 0.510 | 0.123 | 0.302 | 0.537 | 0.105 | 0.290 | 0.471 | 0.136 |
-| GLM-4.5                 | 0.307 | 0.529 | 0.127 | 0.330 | 0.569 | 0.112 | 0.316 | 0.523 | 0.152 |
-| Doubao-Seed-1.6         | 0.326 | 0.512 | 0.171 | 0.340 | 0.576 | 0.129 | 0.351 | 0.543 | 0.174 |
-| GLM-4.6                 | 0.342 | 0.612 | 0.113 | 0.336 | 0.623 | 0.084 | 0.317 | 0.555 | 0.123 |
-| Kimi-K2.6               | 0.378 | 0.632 | 0.147 | 0.397 | 0.674 | 0.145 | 0.383 | 0.621 | 0.163 |
-| GLM-5.1                 | 0.420 | 0.654 | 0.204 | 0.423 | 0.664 | 0.182 | 0.383 | 0.585 | 0.200 |
-| Doubao-Seed-2.0-pro     | 0.428 | 0.649 | 0.218 | 0.426 | 0.665 | 0.198 | 0.406 | 0.625 | 0.208 |
-| **DeepSeek-V4-Pro**     | **0.456** | **0.652** | **0.267** | **0.427** | **0.658** | **0.207** | **0.424** | **0.618** | **0.247** |
+<table>
+  <thead>
+  <tr>
+    <th rowspan="2" align="left" width="220">
+      <div align="left">Model</div>
+    </th>
+    <th colspan="3" width="270">
+      <div align="center">Full Context</div>
+    </th>
+    <th colspan="3" width="270">
+      <div align="center">Agentic Memory</div>
+    </th>
+    <th colspan="3" width="270">
+      <div align="center">RAG Memory</div>
+    </th>
+  </tr>
+    <tr>
+      <th align="center" width="90">Avg@4</th>
+      <th align="center" width="90">Pass@4</th>
+      <th align="center" width="90">Pass^4</th>
+      <th align="center" width="90">Avg@4</th>
+      <th align="center" width="90">Pass@4</th>
+      <th align="center" width="90">Pass^4</th>
+      <th align="center" width="90">Avg@4</th>
+      <th align="center" width="90">Pass@4</th>
+      <th align="center" width="90">Pass^4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GPT-4o-mini</td>
+      <td align="center" width="90">0.067</td>
+      <td align="center" width="90">0.180</td>
+      <td align="center" width="90">0.006</td>
+      <td align="center" width="90">0.084</td>
+      <td align="center" width="90">0.229</td>
+      <td align="center" width="90">0.008</td>
+      <td align="center" width="90">0.094</td>
+      <td align="center" width="90">0.227</td>
+      <td align="center" width="90">0.011</td>
+    </tr>
+    <tr>
+      <td>GPT-3.5-Turbo</td>
+      <td align="center" width="90">0.140</td>
+      <td align="center" width="90">0.314</td>
+      <td align="center" width="90">0.019</td>
+      <td align="center" width="90">0.231</td>
+      <td align="center" width="90">0.467</td>
+      <td align="center" width="90">0.056</td>
+      <td align="center" width="90">0.205</td>
+      <td align="center" width="90">0.409</td>
+      <td align="center" width="90">0.059</td>
+    </tr>
+    <tr>
+      <td>LongCat-Flash-Chat</td>
+      <td align="center" width="90">0.298</td>
+      <td align="center" width="90">0.510</td>
+      <td align="center" width="90">0.123</td>
+      <td align="center" width="90">0.302</td>
+      <td align="center" width="90">0.537</td>
+      <td align="center" width="90">0.105</td>
+      <td align="center" width="90">0.290</td>
+      <td align="center" width="90">0.471</td>
+      <td align="center" width="90">0.136</td>
+    </tr>
+    <tr>
+      <td>GLM-4.5</td>
+      <td align="center" width="90">0.307</td>
+      <td align="center" width="90">0.529</td>
+      <td align="center" width="90">0.127</td>
+      <td align="center" width="90">0.330</td>
+      <td align="center" width="90">0.569</td>
+      <td align="center" width="90">0.112</td>
+      <td align="center" width="90">0.316</td>
+      <td align="center" width="90">0.523</td>
+      <td align="center" width="90">0.152</td>
+    </tr>
+    <tr>
+      <td>Doubao-Seed-1.6</td>
+      <td align="center" width="90">0.326</td>
+      <td align="center" width="90">0.512</td>
+      <td align="center" width="90">0.171</td>
+      <td align="center" width="90">0.340</td>
+      <td align="center" width="90">0.576</td>
+      <td align="center" width="90">0.129</td>
+      <td align="center" width="90">0.351</td>
+      <td align="center" width="90">0.543</td>
+      <td align="center" width="90">0.174</td>
+    </tr>
+    <tr>
+      <td>GLM-4.6</td>
+      <td align="center" width="90">0.342</td>
+      <td align="center" width="90">0.612</td>
+      <td align="center" width="90">0.113</td>
+      <td align="center" width="90">0.336</td>
+      <td align="center" width="90">0.623</td>
+      <td align="center" width="90">0.084</td>
+      <td align="center" width="90">0.317</td>
+      <td align="center" width="90">0.555</td>
+      <td align="center" width="90">0.123</td>
+    </tr>
+    <tr>
+      <td>Kimi-K2.6</td>
+      <td align="center" width="90">0.378</td>
+      <td align="center" width="90">0.632</td>
+      <td align="center" width="90">0.147</td>
+      <td align="center" width="90">0.397</td>
+      <td align="center" width="90"><strong>0.674</strong></td>
+      <td align="center" width="90">0.145</td>
+      <td align="center" width="90">0.383</td>
+      <td align="center" width="90">0.621</td>
+      <td align="center" width="90">0.163</td>
+    </tr>
+    <tr>
+      <td>GLM-5.1</td>
+      <td align="center" width="90">0.420</td>
+      <td align="center" width="90"><strong>0.654</strong></td>
+      <td align="center" width="90">0.204</td>
+      <td align="center" width="90">0.423</td>
+      <td align="center" width="90">0.664</td>
+      <td align="center" width="90">0.182</td>
+      <td align="center" width="90">0.383</td>
+      <td align="center" width="90">0.585</td>
+      <td align="center" width="90">0.200</td>
+    </tr>
+    <tr>
+      <td>Doubao-Seed-2.0-pro</td>
+      <td align="center" width="90">0.428</td>
+      <td align="center" width="90">0.649</td>
+      <td align="center" width="90">0.218</td>
+      <td align="center" width="90">0.426</td>
+      <td align="center" width="90">0.665</td>
+      <td align="center" width="90">0.198</td>
+      <td align="center" width="90">0.406</td>
+      <td align="center" width="90"><strong>0.625</strong></td>
+      <td align="center" width="90">0.208</td>
+    </tr>
+    <tr>
+      <td><strong>DeepSeek-V4-Pro</strong></td>
+      <td align="center" width="90"><strong>0.456</strong></td>
+      <td align="center" width="90">0.652</td>
+      <td align="center" width="90"><strong>0.267</strong></td>
+      <td align="center" width="90"><strong>0.427</strong></td>
+      <td align="center" width="90">0.658</td>
+      <td align="center" width="90"><strong>0.207</strong></td>
+      <td align="center" width="90"><strong>0.424</strong></td>
+      <td align="center" width="90">0.618</td>
+      <td align="center" width="90"><strong>0.247</strong></td>
+    </tr>
+  </tbody>
+</table>
 
-### Thinking Models
+<h3>Thinking Models</h3>
 
-| Model | Full Context |  |  | Agentic Memory |  |  | RAG Memory |  |  |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|  | **Avg@4** | Pass@4 | Pass^4 | **Avg@4** | Pass@4 | Pass^4 | **Avg@4** | Pass@4 | Pass^4 |
-| o4-mini                 | 0.210 | 0.433 | 0.047 | 0.270 | 0.533 | 0.073 | 0.261 | 0.452 | 0.091 |
-| Gemini-2.5-Flash        | 0.282 | 0.556 | 0.063 | 0.312 | 0.567 | 0.098 | 0.309 | 0.544 | 0.107 |
-| Qwen3-Max               | 0.284 | 0.499 | 0.105 | 0.324 | 0.599 | 0.091 | 0.315 | 0.519 | 0.134 |
-| Kimi-K2.6               | 0.293 | 0.533 | 0.099 | 0.280 | 0.508 | 0.088 | 0.303 | 0.511 | 0.118 |
-| Gemini-2.5-Pro          | 0.331 | 0.605 | 0.109 | 0.378 | 0.638 | 0.138 | 0.320 | 0.579 | 0.109 |
-| MiniMax-M2.7            | 0.345 | 0.584 | 0.145 | 0.351 | 0.609 | 0.124 | 0.314 | 0.518 | 0.143 |
-| GLM-4.6                 | 0.359 | 0.612 | 0.116 | 0.351 | 0.625 | 0.107 | 0.336 | 0.574 | 0.135 |
-| GLM-4.5                 | 0.364 | 0.623 | 0.156 | 0.311 | 0.596 | 0.106 | 0.336 | 0.555 | 0.147 |
-| Doubao-Seed-1.6         | 0.373 | 0.599 | 0.176 | 0.383 | 0.646 | 0.123 | 0.375 | 0.591 | 0.179 |
-| GLM-5.1                 | 0.394 | 0.587 | 0.213 | 0.352 | 0.556 | 0.150 | 0.328 | 0.485 | 0.185 |
-| DeepSeek-R1-0528        | 0.396 | **0.691** | 0.131 | 0.412 | **0.712** | 0.118 | 0.390 | **0.643** | 0.153 |
-| o3                      | 0.403 | 0.653 | 0.169 | 0.401 | 0.669 | 0.154 | 0.362 | 0.587 | 0.158 |
-| Claude-4.5-Sonnet       | 0.417 | 0.658 | 0.197 | 0.397 | 0.642 | 0.178 | 0.374 | 0.573 | 0.186 |
-| GPT-5                   | 0.441 | 0.658 | 0.226 | 0.421 | 0.647 | 0.204 | 0.410 | 0.591 | 0.236 |
-| DeepSeek-V4-Pro         | 0.472 | 0.649 | 0.295 | 0.449 | 0.656 | 0.255 | **0.430** | 0.584 | 0.271 |
-| Doubao-Seed-2.0-pro     | 0.474 | 0.683 | 0.270 | 0.428 | 0.650 | 0.225 | 0.339 | 0.496 | 0.205 |
-| **Claude-Opus-4.6**     | **0.503** | 0.664 | **0.337** | **0.454** | 0.645 | **0.259** | **0.430** | 0.566 | **0.299** |
+<table>
+  <thead>
+  <tr>
+    <th rowspan="2" align="left" width="220">
+      <div align="left">Model</div>
+    </th>
+    <th colspan="3" width="270">
+      <div align="center">Full Context</div>
+    </th>
+    <th colspan="3" width="270">
+      <div align="center">Agentic Memory</div>
+    </th>
+    <th colspan="3" width="270">
+      <div align="center">RAG Memory</div>
+    </th>
+  </tr>
+    <tr>
+      <th align="center" width="90">Avg@4</th>
+      <th align="center" width="90">Pass@4</th>
+      <th align="center" width="90">Pass^4</th>
+      <th align="center" width="90">Avg@4</th>
+      <th align="center" width="90">Pass@4</th>
+      <th align="center" width="90">Pass^4</th>
+      <th align="center" width="90">Avg@4</th>
+      <th align="center" width="90">Pass@4</th>
+      <th align="center" width="90">Pass^4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>o4-mini</td>
+      <td align="center" width="90">0.210</td>
+      <td align="center" width="90">0.433</td>
+      <td align="center" width="90">0.047</td>
+      <td align="center" width="90">0.270</td>
+      <td align="center" width="90">0.533</td>
+      <td align="center" width="90">0.073</td>
+      <td align="center" width="90">0.261</td>
+      <td align="center" width="90">0.452</td>
+      <td align="center" width="90">0.091</td>
+    </tr>
+    <tr>
+      <td>Gemini-2.5-Flash</td>
+      <td align="center" width="90">0.282</td>
+      <td align="center" width="90">0.556</td>
+      <td align="center" width="90">0.063</td>
+      <td align="center" width="90">0.312</td>
+      <td align="center" width="90">0.567</td>
+      <td align="center" width="90">0.098</td>
+      <td align="center" width="90">0.309</td>
+      <td align="center" width="90">0.544</td>
+      <td align="center" width="90">0.107</td>
+    </tr>
+    <tr>
+      <td>Qwen3-Max</td>
+      <td align="center" width="90">0.284</td>
+      <td align="center" width="90">0.499</td>
+      <td align="center" width="90">0.105</td>
+      <td align="center" width="90">0.324</td>
+      <td align="center" width="90">0.599</td>
+      <td align="center" width="90">0.091</td>
+      <td align="center" width="90">0.315</td>
+      <td align="center" width="90">0.519</td>
+      <td align="center" width="90">0.134</td>
+    </tr>
+    <tr>
+      <td>Kimi-K2.6</td>
+      <td align="center" width="90">0.293</td>
+      <td align="center" width="90">0.533</td>
+      <td align="center" width="90">0.099</td>
+      <td align="center" width="90">0.280</td>
+      <td align="center" width="90">0.508</td>
+      <td align="center" width="90">0.088</td>
+      <td align="center" width="90">0.303</td>
+      <td align="center" width="90">0.511</td>
+      <td align="center" width="90">0.118</td>
+    </tr>
+    <tr>
+      <td>Gemini-2.5-Pro</td>
+      <td align="center" width="90">0.331</td>
+      <td align="center" width="90">0.605</td>
+      <td align="center" width="90">0.109</td>
+      <td align="center" width="90">0.378</td>
+      <td align="center" width="90">0.638</td>
+      <td align="center" width="90">0.138</td>
+      <td align="center" width="90">0.320</td>
+      <td align="center" width="90">0.579</td>
+      <td align="center" width="90">0.109</td>
+    </tr>
+    <tr>
+      <td>MiniMax-M2.7</td>
+      <td align="center" width="90">0.345</td>
+      <td align="center" width="90">0.584</td>
+      <td align="center" width="90">0.145</td>
+      <td align="center" width="90">0.351</td>
+      <td align="center" width="90">0.609</td>
+      <td align="center" width="90">0.124</td>
+      <td align="center" width="90">0.314</td>
+      <td align="center" width="90">0.518</td>
+      <td align="center" width="90">0.143</td>
+    </tr>
+    <tr>
+      <td>GLM-4.6</td>
+      <td align="center" width="90">0.359</td>
+      <td align="center" width="90">0.612</td>
+      <td align="center" width="90">0.116</td>
+      <td align="center" width="90">0.351</td>
+      <td align="center" width="90">0.625</td>
+      <td align="center" width="90">0.107</td>
+      <td align="center" width="90">0.336</td>
+      <td align="center" width="90">0.574</td>
+      <td align="center" width="90">0.135</td>
+    </tr>
+    <tr>
+      <td>GLM-4.5</td>
+      <td align="center" width="90">0.364</td>
+      <td align="center" width="90">0.623</td>
+      <td align="center" width="90">0.156</td>
+      <td align="center" width="90">0.311</td>
+      <td align="center" width="90">0.596</td>
+      <td align="center" width="90">0.106</td>
+      <td align="center" width="90">0.336</td>
+      <td align="center" width="90">0.555</td>
+      <td align="center" width="90">0.147</td>
+    </tr>
+    <tr>
+      <td>Doubao-Seed-1.6</td>
+      <td align="center" width="90">0.373</td>
+      <td align="center" width="90">0.599</td>
+      <td align="center" width="90">0.176</td>
+      <td align="center" width="90">0.383</td>
+      <td align="center" width="90">0.646</td>
+      <td align="center" width="90">0.123</td>
+      <td align="center" width="90">0.375</td>
+      <td align="center" width="90">0.591</td>
+      <td align="center" width="90">0.179</td>
+    </tr>
+    <tr>
+      <td>GLM-5.1</td>
+      <td align="center" width="90">0.394</td>
+      <td align="center" width="90">0.587</td>
+      <td align="center" width="90">0.213</td>
+      <td align="center" width="90">0.352</td>
+      <td align="center" width="90">0.556</td>
+      <td align="center" width="90">0.150</td>
+      <td align="center" width="90">0.328</td>
+      <td align="center" width="90">0.485</td>
+      <td align="center" width="90">0.185</td>
+    </tr>
+    <tr>
+      <td>DeepSeek-R1-0528</td>
+      <td align="center" width="90">0.396</td>
+      <td align="center" width="90"><strong>0.691</strong></td>
+      <td align="center" width="90">0.131</td>
+      <td align="center" width="90">0.412</td>
+      <td align="center" width="90"><strong>0.712</strong></td>
+      <td align="center" width="90">0.118</td>
+      <td align="center" width="90">0.390</td>
+      <td align="center" width="90"><strong>0.643</strong></td>
+      <td align="center" width="90">0.153</td>
+    </tr>
+    <tr>
+      <td>o3</td>
+      <td align="center" width="90">0.403</td>
+      <td align="center" width="90">0.653</td>
+      <td align="center" width="90">0.169</td>
+      <td align="center" width="90">0.401</td>
+      <td align="center" width="90">0.669</td>
+      <td align="center" width="90">0.154</td>
+      <td align="center" width="90">0.362</td>
+      <td align="center" width="90">0.587</td>
+      <td align="center" width="90">0.158</td>
+    </tr>
+    <tr>
+      <td>Claude-4.5-Sonnet</td>
+      <td align="center" width="90">0.417</td>
+      <td align="center" width="90">0.658</td>
+      <td align="center" width="90">0.197</td>
+      <td align="center" width="90">0.397</td>
+      <td align="center" width="90">0.642</td>
+      <td align="center" width="90">0.178</td>
+      <td align="center" width="90">0.374</td>
+      <td align="center" width="90">0.573</td>
+      <td align="center" width="90">0.186</td>
+    </tr>
+    <tr>
+      <td>GPT-5</td>
+      <td align="center" width="90">0.441</td>
+      <td align="center" width="90">0.658</td>
+      <td align="center" width="90">0.226</td>
+      <td align="center" width="90">0.421</td>
+      <td align="center" width="90">0.647</td>
+      <td align="center" width="90">0.204</td>
+      <td align="center" width="90">0.410</td>
+      <td align="center" width="90">0.591</td>
+      <td align="center" width="90">0.236</td>
+    </tr>
+    <tr>
+      <td>DeepSeek-V4-Pro</td>
+      <td align="center" width="90">0.472</td>
+      <td align="center" width="90">0.649</td>
+      <td align="center" width="90">0.295</td>
+      <td align="center" width="90">0.449</td>
+      <td align="center" width="90">0.656</td>
+      <td align="center" width="90">0.255</td>
+      <td align="center" width="90"><strong>0.430</strong></td>
+      <td align="center" width="90">0.584</td>
+      <td align="center" width="90">0.271</td>
+    </tr>
+    <tr>
+      <td>Doubao-Seed-2.0-pro</td>
+      <td align="center" width="90">0.474</td>
+      <td align="center" width="90">0.683</td>
+      <td align="center" width="90">0.270</td>
+      <td align="center" width="90">0.428</td>
+      <td align="center" width="90">0.650</td>
+      <td align="center" width="90">0.225</td>
+      <td align="center" width="90">0.339</td>
+      <td align="center" width="90">0.496</td>
+      <td align="center" width="90">0.205</td>
+    </tr>
+    <tr>
+      <td><strong>Claude-Opus-4.6</strong></td>
+      <td align="center" width="90"><strong>0.503</strong></td>
+      <td align="center" width="90">0.664</td>
+      <td align="center" width="90"><strong>0.337</strong></td>
+      <td align="center" width="90"><strong>0.454</strong></td>
+      <td align="center" width="90">0.645</td>
+      <td align="center" width="90"><strong>0.259</strong></td>
+      <td align="center" width="90"><strong>0.430</strong></td>
+      <td align="center" width="90">0.566</td>
+      <td align="center" width="90"><strong>0.299</strong></td>
+    </tr>
+  </tbody>
+</table>
 
 > **Avg@4** — mean success rate over 4 independent rollouts per task (single-attempt success).
 > **Pass@4** — fraction of tasks solved in *at least one* of 4 rollouts (best-of-4).
 > **Pass^4** — fraction of tasks solved in *all* 4 rollouts (consistency).
 
-## 🔎 Citation
-
-If you find this work useful, please cite:
-
-```bibtex
-@article{vitabench2_2026,
-  title  = {VitaBench 2.0: Evaluating Personalized and Proactive Agents in Long-Term User Interactions},
-  year   = {2026},
-  eprint = {2605.27141},
-  archivePrefix = {arXiv}
-}
-```
-
-Please also consider citing the original VitaBench:
-
-```bibtex
-@article{he2025vitabench,
-  title   = {VitaBench: Benchmarking LLM Agents with Versatile Interactive Tasks in Real-world Applications},
-  author  = {He, Wei and Sun, Yueqing and Hao, Hongyan and Hao, Xueyuan and Xia, Zhikang and Gu, Qi and Han, Chengcheng and Zhao, Dengchang and Su, Hui and Zhang, Kefeng and Gao, Man and Su, Xi and Cai, Xiaodong and Cai, Xunliang and Yang, Yu and Zhao, Yunke},
-  journal = {arXiv preprint arXiv:2509.26490},
-  year    = {2025}
-}
-```
 
 ## 📜 License
 
