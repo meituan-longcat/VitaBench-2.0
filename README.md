@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <b>🌍 English version coming soon.</b>
+  <b>🌍 English version benchmark coming soon.</b>
 </p>
 
 ## 📖 Introduction
