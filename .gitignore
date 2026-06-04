@@ -1,0 +1,48 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+build/
+dist/
+*.egg-info/
+
+# Run artifacts
+*.log
+*.csv
+data/simulations/
+data/simulations/*
+
+# Task data — distributed via HuggingFace (Chen1999/VitaBench-2), kept out of git.
+data/vita/domains/delivery/tasks.json
+data/vita/domains/instore/tasks.json
+data/vita/domains/ota/tasks.json
+data/vita/domains/cross_domain/tasks.json
+data/vita/domains/personalization/tasks.json
+
+# Local development / caches
+.pdm-build/
+.pytest_cache/
+.venv/
+venv/
+ENV/
+.python-version
+.env
+.idea/
+.vscode/
+.DS_Store
+**/.specstory
+.cursorindexingignore
+**/analyse
+./.claude/
+**/.claude/
+
+# Local model config — only the example is tracked
+src/vita/models.yaml
+
+# Project memory — never published
+**/CLAUDE.md
+docs/superpowers/plans/

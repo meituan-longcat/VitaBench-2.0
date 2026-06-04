@@ -1,0 +1,33 @@
+# src/vita/models.yaml.example
+#
+# Copy this file to src/vita/models.yaml and edit to your needs.
+# `${VAR}` placeholders are expanded from the process environment when
+# the file is loaded; an unset variable causes a startup error.
+
+default:
+  base_url: https://api.openai.com/v1
+  api_key: ${OPENAI_API_KEY}
+  temperature: 0.0
+  max_input_tokens: 128000
+
+models:
+  - name: gpt-4.1
+    max_tokens: 8192
+    cost_1m_token_dollar:
+      prompt_price: 2.00
+      completion_price: 8.00
+
+  - name: gpt-4o-mini
+    max_tokens: 16384
+    cost_1m_token_dollar:
+      prompt_price: 0.15
+      completion_price: 0.60
+
+  - name: o4-mini
+    # Reasoning model: temperature is omitted (SDK rejects it for o-series),
+    # reasoning_effort is forwarded verbatim.
+    reasoning_effort: medium
+    max_completion_tokens: 16384
+    cost_1m_token_dollar:
+      prompt_price: 1.10
+      completion_price: 4.40

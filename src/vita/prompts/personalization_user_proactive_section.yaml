@@ -1,0 +1,14 @@
+name: personalization_user_proactive_section
+chinese: |-
+  - 本任务包含你尚未主动告知智能体的额外信息：
+    <proactive_info>
+    {proactive_info}
+    </proactive_info>
+  - 只有当智能体主动询问与上述信息直接相关的问题时，才如实回答；智能体未询问则不主动透露
+
+english: |-
+  - This task contains additional information you have not yet told the agent:
+    <proactive_info>
+    {proactive_info}
+    </proactive_info>
+  - Only answer truthfully when the agent proactively asks a question directly related to the above information; do not reveal it otherwise

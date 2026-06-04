@@ -1,0 +1,53 @@
+# Memory backend configuration
+# Merged with constructor kwargs (kwargs take precedence).
+# Per-memory configs inherit from 'default' section.
+
+default:
+  top_k: 5
+  similarity_threshold: 0.0
+
+memory:
+  # RewriteMemory: LLM rewrites full memory text each update.
+  # max_tokens controls the LLM output budget for the rewrite.
+  - name: rewrite
+    max_tokens: 4096
+
+  # RAGMemory: async embedding-based vector retrieval (text-embedding-3-large).
+  # top_k=8: covers ~2 subtasks worth of interactions without bloating the prompt.
+  # similarity_threshold=0.3: cosine cutoff — filters semantically unrelated chunks;
+  #   safe lower bound for text-embedding-3-large whose scores cluster above 0.25 for
+  #   loosely related text and above 0.5 for directly relevant content.
+  # chunk_size / chunk_overlap: each interaction's rendered text is split into
+  #   fixed-size token chunks before embedding (tiktoken cl100k_base). Typical
+  #   values: 512 (default, fewer embed calls, coarser retrieval) or 256 (finer,
+  #   ~2x embed cost). overlap=0 keeps splits disjoint; set 50~100 if boundary
+  #   context loss hurts retrieval on long dialogues.
+  - name: rag
+    top_k: 8
+    similarity_threshold: 0.3
+    chunk_size: 512
+    chunk_overlap: 0
+
+  # RAGCacheMemory: same retrieval semantics as rag, but embeddings are
+  # pre-computed and loaded from disk by scripts/precompute_rag_cache.py.
+  # Strict mode — missing cache entries raise instead of falling back.
+  # Share rag's retrieval knobs so a drop-in swap keeps behaviour identical.
+  - name: rag_cache
+    top_k: 8
+    similarity_threshold: 0.3
+    chunk_size: 512
+    chunk_overlap: 0
+
+  # FullContextMemory: append-only, token-truncated from head.
+  # max_tokens = max token budget for the context window.
+  - name: full_context
+    max_tokens: 102400
+
+  # GroundtruthMemory: oracle baseline from task data.
+  # No retrieval — read() returns full ground-truth preference text directly.
+  # No top_k or similarity_threshold needed.
+  - name: groundtruth
+
+  # NullMemory: no-op baseline.
+  # No parameters needed — read()/update() are no-ops.
+  - name: "null"

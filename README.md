@@ -3,13 +3,7 @@
 </h1></div>
 
 <p align="center">
-  📃 <a href="https://arxiv.org/abs/2605.27141" target="_blank">Paper</a> 
-</p>
-
-<p align="center">
-  <b>🚧 Dataset and Code Release</b>
-  <br>
-  The dataset, evaluation scripts, and code will be released soon.
+  📃 <a href="https://arxiv.org/abs/2605.27141" target="_blank">Paper</a> • 🌐 <a href="https://vitabench2.github.io/" target="_blank">Website</a> • 🤗 <a href="https://huggingface.co/datasets/Chen1999/VitaBench-2" target="_blank">Dataset</a>
 </p>
 
 ## 📖 Introduction
@@ -29,6 +23,85 @@ Each evaluation in VitaBench 2.0 simulates a continuing relationship between an 
 - **RAG Memory** — past interactions are chunked, embedded, and retrieved on demand.
 
 Our results show that even the SOTA models reach only ~50% Avg@4 under Full Context and degrade further under realistic memory settings, indicating that long-horizon personalization and proactivity remain open challenges for current LLM agents.
+
+
+## 🛠️ Quick Start
+
+### 1. Install
+
+```bash
+git clone https://github.com/meituan-longcat/VitaBench-2.0.git
+cd VitaBench-2.0
+pip install -e .
+```
+
+This installs the `vita` CLI.
+
+### 2. Download the dataset
+
+VitaBench 2.0 tasks are hosted on Hugging Face: [Chen1999/VitaBench-2](https://huggingface.co/datasets/Chen1999/VitaBench-2).
+
+```bash
+pip install -U "huggingface_hub[cli]"
+huggingface-cli download Chen1999/VitaBench-2 \
+  --repo-type dataset \
+  --local-dir data/vita/domains/personalization
+```
+
+After downloading, you should have `data/vita/domains/personalization/tasks.json` (56 users, 771 subtasks).
+
+### 3. Configure the LLM
+
+```bash
+cp src/vita/models.yaml.example src/vita/models.yaml
+export OPENAI_API_KEY=sk-...
+```
+
+`src/vita/models.yaml` supports any OpenAI-compatible endpoint — change `default.base_url` to point at Azure, vLLM, Together, llama.cpp, etc. The YAML supports `${VAR}` placeholders expanded from your shell.
+
+For RAG / embeddings:
+
+| Env var | Default | Purpose |
+|---------|---------|---------|
+| `VITA_EMBEDDING_URL` | `models.yaml default.base_url` | Embedding endpoint |
+| `VITA_EMBEDDING_KEY` | `models.yaml default.api_key` | Embedding API key |
+| `VITA_EMBEDDING_MODEL` | `text-embedding-3-large` | Embedding model name |
+| `VITA_EMBEDDING_MAX_CONCURRENCY` | `64` | Per-event-loop semaphore size |
+
+### 4. Run an evaluation
+
+```bash
+vita run \
+  --domain personalization \
+  --memory-type rewrite \
+  --agent-llm gpt-4.1 \
+  --user-llm gpt-4.1 \
+  --evaluator-llm gpt-4.1 \
+  --num-tasks 1 --max-steps 50
+```
+
+`--save-to <name>.json` writes results under `data/simulations/`.
+
+### 5. Run all memory backends
+
+```bash
+bash scripts/run_memory_benchmark.sh
+# or a subset:
+bash scripts/run_memory_benchmark.sh full_context rewrite rag
+```
+
+### Memory backends
+
+| `--memory-type` | Behaviour |
+|-----------------|-----------|
+| `null` | No memory (baseline) |
+| `groundtruth` | Injects the canonical preference memory directly (upper bound) |
+| `full_context` | Dumps every prior interaction as context |
+| `rewrite` | LLM rewrites a single consolidated memory string each update |
+| `rag` | Async vector retrieval (`text-embedding-3-large` by default) |
+| `rag_cache` | RAG with a precomputed embedding cache (see `scripts/precompute_rag_cache.py`) |
+
+Per-backend defaults live in `src/vita/memory.yaml`; constructor kwargs override.
 
 
 ## 🏆 Leaderboard
@@ -430,6 +503,20 @@ Performance of non-thinking and thinking models under three memory settings. The
 > **Avg@4** — mean success rate over 4 independent rollouts per task (single-attempt success).
 > **Pass@4** — fraction of tasks solved in *at least one* of 4 rollouts (best-of-4).
 > **Pass^4** — fraction of tasks solved in *all* 4 rollouts (consistency).
+
+
+## 📚 Citation
+
+If you use VitaBench 2.0 in your research, please cite:
+
+```bibtex
+@article{chen2026vitabench,
+  title={VitaBench 2.0: Evaluating Personalized and Proactive Agents in Long-Term User Interactions},
+  author={Chen, Yuxin and Zhang, Yi and Cai, Zhengzhou and Shi, Yaorui and Yao, Zhiyuan and Cui, Chenhang and Zheng, Jingnan and Huo, Yaqi and Su, Xi and Gu, Qi and others},
+  journal={arXiv preprint arXiv:2605.27141},
+  year={2026}
+}
+```
 
 
 ## 📜 License
