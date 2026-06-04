@@ -6,6 +6,10 @@
   📃 <a href="https://arxiv.org/abs/2605.27141" target="_blank">Paper</a> • 🌐 <a href="https://vitabench2.github.io/" target="_blank">Website</a> • 🤗 <a href="https://huggingface.co/datasets/Chen1999/VitaBench-2" target="_blank">Dataset</a>
 </p>
 
+<p align="center">
+  <b>🌍 English version coming soon.</b>
+</p>
+
 ## 📖 Introduction
 
 Large language models (LLMs) have evolved into interactive agents that collaborate with users in real-world tasks. Effective collaboration in such settings increasingly depends on understanding the user beyond what is explicitly stated, as user intent is often reflected in fragmented daily interactions and requires both personalized modeling and proactive interaction. We introduce **VitaBench 2.0**, a benchmark for evaluating personalized and proactive agent behavior in long-term user interactions.
