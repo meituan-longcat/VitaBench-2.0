@@ -65,6 +65,7 @@ class PersonalizationOrchestrator:
         llm_args_evaluator: Optional[dict] = None,
         language: str = None,
         enable_outcome_reward: bool = False,
+        max_subtask_retries: int = 3,
     ):
         """Initialize the PersonalizationOrchestrator.
 
@@ -81,6 +82,7 @@ class PersonalizationOrchestrator:
             language: Language setting.
             enable_outcome_reward: If True, combine trajectory reward with action-level
                 outcome reward via min(traj, outcome) per subtask.
+            max_subtask_retries: Maximum retries per subtask on API failure.
         """
         self.task = task
         self.agent = agent
@@ -92,6 +94,7 @@ class PersonalizationOrchestrator:
         self.llm_evaluator = llm_evaluator
         self.llm_args_evaluator = llm_args_evaluator
         self.language = language
+        self.max_subtask_retries = max_subtask_retries
         self.enable_outcome_reward = enable_outcome_reward
 
     def run(self) -> SimulationRun:
@@ -226,9 +229,30 @@ class PersonalizationOrchestrator:
             if memory_read_content.count("\n") > 5:
                 print(f"         ...")
 
-            # 2c: Run the subtask conversation
+            # 2c: Run the subtask conversation (with per-subtask retry)
             print(f"\n   💬 Step 2c: Running subtask conversation...")
-            subtask_result = self._run_subtask(subtask, environment, i)
+            subtask_result = None
+            for attempt in range(self.max_subtask_retries + 1):
+                try:
+                    subtask_result = self._run_subtask(subtask, environment, i)
+                    break
+                except Exception as e:
+                    if attempt < self.max_subtask_retries:
+                        logger.warning(
+                            f"Subtask {subtask.subtask_id} failed on attempt "
+                            f"{attempt + 1}/{self.max_subtask_retries + 1}: "
+                            f"{type(e).__name__}: {e}. Retrying subtask..."
+                        )
+                        print(f"      ⚠️  Subtask failed (attempt {attempt + 1}), retrying...")
+                        continue
+                    else:
+                        logger.error(
+                            f"Subtask {subtask.subtask_id} failed after "
+                            f"{self.max_subtask_retries + 1} attempts. "
+                            f"Last error: {type(e).__name__}: {e}"
+                        )
+                        raise
+
             num_msgs = len(subtask_result["messages"])
             termination = subtask_result["termination_reason"]
             print(f"      ✅ Conversation completed: {num_msgs} messages, termination={termination}")
@@ -248,7 +272,7 @@ class PersonalizationOrchestrator:
                         tc_args = str(tc.arguments)[:100] if hasattr(tc, 'arguments') else ''
                         print(f"         [{role}] 🔧 {tc_name}({tc_args})")
 
-            # 2d: Evaluate the subtask
+            # 2d: Evaluate the subtask (with per-subtask retry)
             print(f"\n   📊 Step 2d: Evaluating subtask...")
             if subtask.evaluation_criteria is not None:
                 if subtask.evaluation_criteria.overall_rubrics:
@@ -257,7 +281,27 @@ class PersonalizationOrchestrator:
                         print(f"         [{r_idx+1}] {rubric[:100]}")
                 if subtask.evaluation_criteria.expected_states:
                     print(f"      Expected states: {len(subtask.evaluation_criteria.expected_states)}")
-                reward_info = self._evaluate_subtask(subtask, subtask_result)
+                reward_info = None
+                for attempt in range(self.max_subtask_retries + 1):
+                    try:
+                        reward_info = self._evaluate_subtask(subtask, subtask_result)
+                        break
+                    except Exception as e:
+                        if attempt < self.max_subtask_retries:
+                            logger.warning(
+                                f"Evaluation for subtask {subtask.subtask_id} failed on attempt "
+                                f"{attempt + 1}/{self.max_subtask_retries + 1}: "
+                                f"{type(e).__name__}: {e}. Retrying evaluation..."
+                            )
+                            print(f"      ⚠️  Evaluation failed (attempt {attempt + 1}), retrying...")
+                            continue
+                        else:
+                            logger.error(
+                                f"Evaluation for subtask {subtask.subtask_id} failed after "
+                                f"{self.max_subtask_retries + 1} attempts. "
+                                f"Last error: {type(e).__name__}: {e}"
+                            )
+                            raise
                 all_reward_infos.append(reward_info)
                 print(f"      ✅ Evaluation result: reward={reward_info.reward}")
                 if reward_info.info:
