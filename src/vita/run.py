@@ -556,6 +556,7 @@ def run_task(
                 memory_type=memory_type,
                 memory_class=memory_class,
                 enable_outcome_reward=enable_outcome_reward,
+                max_retries=max_retries,
             )
         except Exception as e:
             tb = traceback.format_exc()
@@ -595,6 +596,7 @@ def _run_task_internal(
     memory_type: str = "rewrite",
     memory_class: Optional[str] = None,
     enable_outcome_reward: bool = False,
+    max_retries: int = 3,
 ) -> SimulationRun:
     """
     Internal implementation of run_task without retry logic.
@@ -626,6 +628,7 @@ def _run_task_internal(
             memory_type=memory_type,
             memory_class=memory_class,
             enable_outcome_reward=enable_outcome_reward,
+            max_retries=max_retries,
         )
 
     # --- Standard domain workflow ---
@@ -717,6 +720,7 @@ def _run_personalization_task(
     memory_type: str = "rewrite",
     memory_class: Optional[str] = None,
     enable_outcome_reward: bool = False,
+    max_retries: int = 3,
 ) -> SimulationRun:
     """
     Run a personalization task using the PersonalizationOrchestrator.
@@ -788,6 +792,7 @@ def _run_personalization_task(
         llm_args_evaluator=llm_args_evaluator,
         language=language,
         enable_outcome_reward=enable_outcome_reward,
+        max_subtask_retries=max_retries,
     )
 
     simulation = orchestrator.run()
