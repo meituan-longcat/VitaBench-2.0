@@ -41,7 +41,13 @@ Our results show that even SOTA models reach only **~50% Avg@4** under Full Cont
 
 ## 🌱 Benchmark Details
 
-VitaBench 2.0 reuses the three life-service environments of VitaBench and recomposes them into **per-user, multi-subtask sequences**. Each task is one user; each subtask carries an `instruction`, a canonical `personalized_preference_memory`, `historical_chat` / `historical_behavior`, a rubric, and an `environment` of target + distraction entities across one or more env keys (`stores` / `shops` / `hotels` / `trains` / `flights` / `attractions`).
+VitaBench 2.0 reuses the three life-service environments of VitaBench and recomposes them into **per-user, multi-subtask sequences**. Each task represents a single user, and each subtask within it provides:
+
+- **An instruction** — what the user is asking for in this subtask.
+- **The user's ground-truth preferences** — the correct personalized preferences the agent is expected to have learned and applied, used as the reference for scoring.
+- **Prior interaction history** — the user's earlier conversations and behaviors that the agent can draw on to infer those preferences.
+- **A rubric** — the criteria used to judge whether the agent's response is correct.
+- **A candidate environment** — a pool of real-world entities (restaurants, shops, hotels, trains, flights, or attractions, depending on the domain) that mixes the correct target with plausible distractors, so the agent must select the right one rather than guess.
 
 | Personalization dataset |          |
 | :---------------------- | :------: |
@@ -50,19 +56,7 @@ VitaBench 2.0 reuses the three life-service environments of VitaBench and recomp
 | Subtasks per user (avg) |   ~14    |
 | Domains covered         | delivery · instore · ota |
 
-The execution loop, per task:
-
-```
-load personalization task (user + subtasks)
-  → PersonalizationOrchestrator
-      for each subtask i:
-          memory.process_interaction(prior interaction)   # skipped for i = 0
-          env_i  = get_cross_environment(subtask_i.domain)
-          agent  = PersonalizationAgent(env_i, memory)     # memory injected into system prompt
-          run agent ↔ PersonalizationUser loop  (max-steps, tool use)
-          reward_i = evaluator(trajectory_i, rubric_i)
-      aggregate → SimulationRun (per-subtask rewards + overall)
-```
+Within a task, the agent works through the user's subtasks one at a time. Before each subtask (except the first), the agent's memory is updated from the previous interaction and injected into its context, so knowledge about the user accumulates over time. The agent then handles the current subtask by conversing with the user and calling tools in the relevant domain, and its response is scored against that subtask's rubric. Once all subtasks are done, the per-subtask scores are aggregated into an overall result for the user.
 
 ## 🛠️ Quick Start
 
