@@ -334,18 +334,6 @@ Performance of non-thinking and thinking models under three memory settings. The
       <td align="center" width="90">0.134</td>
     </tr>
     <tr>
-      <td>Kimi-K2.6</td>
-      <td align="center" width="90">0.293</td>
-      <td align="center" width="90">0.533</td>
-      <td align="center" width="90">0.099</td>
-      <td align="center" width="90">0.280</td>
-      <td align="center" width="90">0.508</td>
-      <td align="center" width="90">0.088</td>
-      <td align="center" width="90">0.303</td>
-      <td align="center" width="90">0.511</td>
-      <td align="center" width="90">0.118</td>
-    </tr>
-    <tr>
       <td>Gemini-2.5-Pro</td>
       <td align="center" width="90">0.331</td>
       <td align="center" width="90">0.605</td>
@@ -359,15 +347,15 @@ Performance of non-thinking and thinking models under three memory settings. The
     </tr>
     <tr>
       <td>MiniMax-M2.7</td>
-      <td align="center" width="90">0.345</td>
-      <td align="center" width="90">0.584</td>
-      <td align="center" width="90">0.145</td>
-      <td align="center" width="90">0.351</td>
-      <td align="center" width="90">0.609</td>
-      <td align="center" width="90">0.124</td>
-      <td align="center" width="90">0.314</td>
-      <td align="center" width="90">0.518</td>
-      <td align="center" width="90">0.143</td>
+      <td align="center" width="90">0.349</td>
+      <td align="center" width="90">0.585</td>
+      <td align="center" width="90">0.136</td>
+      <td align="center" width="90">0.376</td>
+      <td align="center" width="90">0.629</td>
+      <td align="center" width="90">0.150</td>
+      <td align="center" width="90">0.335</td>
+      <td align="center" width="90">0.534</td>
+      <td align="center" width="90">0.148</td>
     </tr>
     <tr>
       <td>GLM-4.6</td>
@@ -383,15 +371,15 @@ Performance of non-thinking and thinking models under three memory settings. The
     </tr>
     <tr>
       <td>GLM-4.5</td>
-      <td align="center" width="90">0.364</td>
-      <td align="center" width="90">0.623</td>
-      <td align="center" width="90">0.156</td>
-      <td align="center" width="90">0.311</td>
-      <td align="center" width="90">0.596</td>
-      <td align="center" width="90">0.106</td>
-      <td align="center" width="90">0.336</td>
-      <td align="center" width="90">0.555</td>
-      <td align="center" width="90">0.147</td>
+      <td align="center" width="90">0.369</td>
+      <td align="center" width="90">0.620</td>
+      <td align="center" width="90">0.157</td>
+      <td align="center" width="90">0.330</td>
+      <td align="center" width="90">0.581</td>
+      <td align="center" width="90">0.114</td>
+      <td align="center" width="90">0.343</td>
+      <td align="center" width="90">0.559</td>
+      <td align="center" width="90">0.160</td>
     </tr>
     <tr>
       <td>Doubao-Seed-1.6</td>
@@ -404,18 +392,6 @@ Performance of non-thinking and thinking models under three memory settings. The
       <td align="center" width="90">0.375</td>
       <td align="center" width="90">0.591</td>
       <td align="center" width="90">0.179</td>
-    </tr>
-    <tr>
-      <td>GLM-5.1</td>
-      <td align="center" width="90">0.394</td>
-      <td align="center" width="90">0.587</td>
-      <td align="center" width="90">0.213</td>
-      <td align="center" width="90">0.352</td>
-      <td align="center" width="90">0.556</td>
-      <td align="center" width="90">0.150</td>
-      <td align="center" width="90">0.328</td>
-      <td align="center" width="90">0.485</td>
-      <td align="center" width="90">0.185</td>
     </tr>
     <tr>
       <td>DeepSeek-R1-0528</td>
@@ -466,6 +442,18 @@ Performance of non-thinking and thinking models under three memory settings. The
       <td align="center" width="90">0.236</td>
     </tr>
     <tr>
+      <td>GLM-5.1</td>
+      <td align="center" width="90">0.450</td>
+      <td align="center" width="90">0.650</td>
+      <td align="center" width="90">0.270</td>
+      <td align="center" width="90">0.453</td>
+      <td align="center" width="90">0.680</td>
+      <td align="center" width="90">0.239</td>
+      <td align="center" width="90">0.383</td>
+      <td align="center" width="90">0.540</td>
+      <td align="center" width="90">0.226</td>
+    </tr>
+    <tr>
       <td>DeepSeek-V4-Pro</td>
       <td align="center" width="90">0.472</td>
       <td align="center" width="90">0.649</td>
@@ -473,7 +461,7 @@ Performance of non-thinking and thinking models under three memory settings. The
       <td align="center" width="90">0.449</td>
       <td align="center" width="90">0.656</td>
       <td align="center" width="90">0.255</td>
-      <td align="center" width="90"><strong>0.430</strong></td>
+      <td align="center" width="90">0.430</td>
       <td align="center" width="90">0.584</td>
       <td align="center" width="90">0.271</td>
     </tr>
@@ -490,6 +478,18 @@ Performance of non-thinking and thinking models under three memory settings. The
       <td align="center" width="90">0.205</td>
     </tr>
     <tr>
+      <td>Kimi-K2.6</td>
+      <td align="center" width="90">0.481</td>
+      <td align="center" width="90">0.685</td>
+      <td align="center" width="90">0.266</td>
+      <td align="center" width="90">0.450</td>
+      <td align="center" width="90">0.696</td>
+      <td align="center" width="90">0.223</td>
+      <td align="center" width="90"><strong>0.434</strong></td>
+      <td align="center" width="90">0.611</td>
+      <td align="center" width="90">0.253</td>
+    </tr>
+    <tr>
       <td><strong>Claude-Opus-4.6</strong></td>
       <td align="center" width="90"><strong>0.503</strong></td>
       <td align="center" width="90">0.664</td>
@@ -497,7 +497,7 @@ Performance of non-thinking and thinking models under three memory settings. The
       <td align="center" width="90"><strong>0.454</strong></td>
       <td align="center" width="90">0.645</td>
       <td align="center" width="90"><strong>0.259</strong></td>
-      <td align="center" width="90"><strong>0.430</strong></td>
+      <td align="center" width="90">0.430</td>
       <td align="center" width="90">0.566</td>
       <td align="center" width="90"><strong>0.299</strong></td>
     </tr>
